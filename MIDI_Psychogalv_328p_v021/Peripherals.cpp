@@ -1,10 +1,21 @@
+#include <LEDFader.h>
+#include "Peripherals.h"
+
+float threshold = 2.3;
+unsigned long batteryCheck = 0;
+long batteryLimit = 3000;
+byte checkBat = 1;
+float threshMin = 1.61;
+float threshMax = 3.71;
+float knobMin = 1;
+float knobMax = 1023;
 
 void checkKnob() {
-  //float knobValue 
-  threshold = analogRead(knobPin);  
+  //float knobValue
+  threshold = analogRead(knobPin);
   //set threshold to knobValue mapping
   threshold = mapfloat(threshold, knobMin, knobMax, threshMin, threshMax);
-   
+
 }
 
 void knobMode() {
@@ -15,20 +26,20 @@ void knobMode() {
 void rampUp(int ledPin, int value, int time) {
 LEDFader *led = &leds[ledPin];
 // led->set_value(0);
-  led->fade(value, time);  
+  led->fade(value, time);
 }
 
-void rampDown(int ledPin, int value, int time) {     
+void rampDown(int ledPin, int value, int time) {
   LEDFader *led = &leds[ledPin];
  // led->set_value(255); //turn on
   led->fade(value, time); //fade out
 }
 
 void checkLED(){
-//iterate through LED array and call update  
+//iterate through LED array and call update
  for (byte i = 0; i < LED_NUM; i++) {
     LEDFader *led = &leds[i];
-    led->update();    
+    led->update();
  }
 }
 
@@ -55,9 +66,9 @@ void checkBattery(){
   //don't check on every loop, settle delay in readVcc() slows things down a bit
  if(batteryCheck < currentMillis){
   batteryCheck = currentMillis+10000; //reset for next battery check
-   
+
   if(readVcc() < batteryLimit) {   //if voltage > valueV
-    //battery failure  
+    //battery failure
     if(checkBat) { //first battery failure
       for(byte j=0;j<LED_NUM;j++) { leds[j].stop_fade(); leds[j].set_value(0); }  //reset leds, power savings
       noteLEDs = 0;  //shut off lightshow set at noteOn event, power savings
@@ -66,20 +77,20 @@ void checkBattery(){
       //do nothing, lights off indicates low battery
       //MIDI continues to flow, MIDI data eventually garbles at very low voltages
       //some USB-MIDI interfaces may crash due to garbled data
-    } 
-  } 
+    }
+  }
  }
 }
 
 void bootLightshow(){
- //light show to be displayed on boot 
+ //light show to be displayed on boot
   for (byte i = 5; i > 0; i--) {
     LEDFader *led = &leds[i-1];
 //    led->set_value(200); //set to max
 
     led->fade(200, 150); //fade up
     while(led->is_fading()) checkLED();
-   
+
 
     led->fade(0,150+i*17);  //fade down
     while(led->is_fading()) checkLED();

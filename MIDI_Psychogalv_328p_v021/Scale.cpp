@@ -1,3 +1,4 @@
+#include "Scale.h"
 
 int scaleSearch(int note, int scale[], int scalesize) {
  for(byte i=1;i<scalesize;i++) {
