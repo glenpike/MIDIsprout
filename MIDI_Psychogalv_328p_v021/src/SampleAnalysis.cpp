@@ -1,5 +1,5 @@
 #include "SampleAnalysis.h"
-#include "Scale.h"
+#include "scale.h"
 #include "MIDIserial.h"
 
 byte controlNumber = 80;
